@@ -1,6 +1,8 @@
 package com.GasStation.compositions;
 
-public interface FuelType {
-    String GASOLINE = "Gasolina";
-    String ETHANOL = "Álcool";
+import com.GasStation.compositions.IFuelType;
+
+public enum FuelType implements IFuelType {
+    GASOLINE,
+    ETHANOL
 }
