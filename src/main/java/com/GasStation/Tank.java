@@ -2,6 +2,7 @@ package com.GasStation;
 
 import com.GasStation.compositions.FuelType;
 import com.GasStation.utils.IO;
+import org.json.simple.JSONObject;
 
 // Classe do Tanque de combustivel
 public class Tank {
@@ -20,7 +21,17 @@ public class Tank {
     }
 
     public Tank() {
+        this.fuel = new Fuel();
+        this.capacity = 0;
+        this.quantity = 0;
         this.id = (int) (Math.random() * 10000);
+    }
+
+    public Tank(int id, Fuel fuel, double capacity, double quantity) {
+        this.id = id;
+        this.fuel = fuel;
+        this.capacity = capacity;
+        this.quantity = 0;
     }
 
     public int getId() {
@@ -40,21 +51,27 @@ public class Tank {
     }
 
     public void setQuantity(double quantity) {
+        if (quantity < 0) {
+            return;
+        }
+
         this.quantity = quantity;
     }
 
+    public void addQuantity(double quantity) {
+        this.quantity += quantity;
+    }
+
     private void setCapacity(double capacity) {
+        if (capacity < 0) {
+            return;
+        }
+
         this.capacity = capacity;
     }
 
     public void setFuel(Fuel fuel) {
         this.fuel = fuel;
-    }
-
-    /// "@Override" sobrescreve o metodo que ja existe
-    @Override
-    public String toString() {
-        return fuel.getType() + " - " + quantity + "L";
     }
 
     public void registerTank() {
@@ -64,26 +81,51 @@ public class Tank {
             IO.print("2 - Álcool");
             int type = IO.readInt("Digite aqui a opção: ");
 
+            Fuel fuel;
+
             switch (type) {
                 case 1:
-                    this.setFuel(new Fuel(FuelType.GASOLINE, 0));
+                    fuel = GasStation.getFuel(FuelType.GASOLINE);
+
+                    if (fuel == null) {
+                        IO.print("Combustível não cadastrado.");
+                        return;
+                    }
+
+                    this.setFuel(fuel);
                     break;
                 case 2:
-                    this.setFuel(new Fuel(FuelType.ETHANOL, 0));
+                    fuel = GasStation.getFuel(FuelType.ETHANOL);
+
+                    if (fuel == null) {
+                        IO.print("Combustível não cadastrado.");
+                        return;
+                    }
+
+                    this.setFuel(fuel);
                     break;
                 default:
                     IO.print("Opção inválida.");
             }
         }
 
-        while(this.fuel.getPrice() <= 0) {
-            IO.print("Qual o preço do combustível?");
-            this.fuel.setPrice(IO.readDouble("Digite aqui o valor: "));
-        }
-
         while (this.capacity <= 0) {
             IO.print("Qual a capacidade do tanque?");
             this.setCapacity(IO.readDouble("Digite aqui o valor: "));
         }
+
+        IO.print("Tanque cadastrado com sucesso.");
+    }
+
+    @Override
+    public String toString() {
+        JSONObject obj = new JSONObject();
+
+        obj.put("id", this.id);
+        obj.put("fuel", this.fuel.getType().toString());
+        obj.put("capacity", this.capacity);
+        obj.put("quantity", this.quantity);
+
+        return obj.toJSONString();
     }
 }

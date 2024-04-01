@@ -3,6 +3,8 @@ package com.GasStation;
 import com.GasStation.compositions.FuelType;
 import com.GasStation.compositions.IFuelType;
 import com.GasStation.utils.IO;
+import com.GasStation.utils.Translate;
+import org.json.simple.JSONObject;
 
 public class Fuel {
     private IFuelType type;
@@ -29,22 +31,24 @@ public class Fuel {
     }
 
     public void setPrice(double price) {
+        if (price <= 0) {
+            return;
+        }
+
         this.price = price;
     }
 
-    @Override
-    public String toString() {
-        return type + " - R$ " + price;
-    }
-
     public void registerFuel() {
-        // o while vai ficar rodando ate que o type seja de um combustivel valido (Gasolina e Alcool).
-        // instanceof checa se o objeto eh uma instancia do outro objeto
         while (!(this.type instanceof FuelType)) {
             IO.print("Qual o tipo de combustível?");
             IO.print("1 - Gasolina");
             IO.print("2 - Álcool");
             int type = IO.readInt("Digite aqui a opção: ");
+
+            if (GasStation.getFuel(type == 1 ? FuelType.GASOLINE : FuelType.ETHANOL) != null) {
+                IO.print("Combustível já cadastrado.");
+                return;
+            }
 
             switch (type) {
                 case 1:
@@ -58,9 +62,8 @@ public class Fuel {
             }
         }
 
-        // o while vai ficar rodando ate que o price seja maior que 0, bem simples
         while (this.price <= 0) {
-            IO.print("Qual o preço do combustível " + this.type + "?");
+            IO.print("Qual o preço do combustível " + Translate.translate(this.type) + "?");
 
             double price = IO.readDouble("Digite aqui o valor: ");
 
@@ -74,5 +77,15 @@ public class Fuel {
 
         // finaliza o cadastro
         IO.print("Combustível cadastrado com sucesso.");
+    }
+
+    @Override
+    public String toString() {
+        JSONObject obj = new JSONObject();
+
+        obj.put("type", this.type.toString());
+        obj.put("price", this.price);
+
+        return obj.toJSONString();
     }
 }
