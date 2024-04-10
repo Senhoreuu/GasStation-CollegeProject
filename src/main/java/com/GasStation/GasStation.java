@@ -5,7 +5,6 @@ import com.GasStation.compositions.IFuelType;
 import com.GasStation.utils.IO;
 import com.GasStation.utils.Saver;
 import com.GasStation.utils.Translate;
-import com.GasStation.utils.Translate;
 
 import java.util.ArrayList;
 

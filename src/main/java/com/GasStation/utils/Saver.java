@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 // Class que vai servir como um banco de dados
 public class Saver {
-    private static final String DEFAULT_CONFIG_FILE = "resources/config.json";
+    private static final String DEFAULT_CONFIG_FILE = "com/GasStation/resources/config.json";
     private static final String USER_DIR = System.getProperty("user.dir");
     private static final String DIRECTORY = USER_DIR + "/posto/src/main/java/";
     private static final String CONFIG_FILE = DIRECTORY + DEFAULT_CONFIG_FILE;
