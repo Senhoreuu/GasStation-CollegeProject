@@ -1,1 +1,1 @@
-{"gasPumps":"[{\"fuel\":\"ETHANOL\",\"id\":247}]","fuels":"[{\"price\":3.9,\"type\":\"ETHANOL\"}]","tanks":"[{\"quantity\":0.0,\"fuel\":\"ETHANOL\",\"id\":2245,\"capacity\":900.0}]","gasStationName":"AutoPosto"}
+{"gasPumps":"[{\"fuel\":\"GASOLINE\",\"id\":8978}, {\"fuel\":\"ETHANOL\",\"id\":6146}]","fuels":"[{\"price\":2.99,\"type\":\"GASOLINE\"}, {\"price\":3.0,\"type\":\"ETHANOL\"}]","tanks":"[{\"quantity\":999.0,\"fuel\":\"GASOLINE\",\"id\":5012,\"capacity\":1000.0}, {\"quantity\":0.0,\"fuel\":\"ETHANOL\",\"id\":900,\"capacity\":1000.0}]","gasStationName":"Cajuba"}
