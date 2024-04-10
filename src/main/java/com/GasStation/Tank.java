@@ -11,10 +11,10 @@ public class Tank {
     private double capacity;
     private double quantity;
 
-    public Tank(Fuel fuel, double capacity) {
+    public Tank(Fuel fuel, double capacity, double quantity) {
         this.fuel = fuel;
         this.capacity = capacity;
-        this.quantity = capacity;
+        this.quantity = quantity;
 
         // (int) faz um cast para inteiro
         this.id = (int) (Math.random() * 10000);
@@ -113,6 +113,8 @@ public class Tank {
             IO.print("Qual a capacidade do tanque?");
             this.setCapacity(IO.readDouble("Digite aqui o valor: "));
         }
+
+        this.setQuantity(this.capacity);
 
         IO.print("Tanque cadastrado com sucesso.");
     }
