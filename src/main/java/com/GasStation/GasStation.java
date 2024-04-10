@@ -6,6 +6,7 @@ import com.GasStation.utils.IO;
 import com.GasStation.utils.Saver;
 import com.GasStation.utils.Translate;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class GasStation {
@@ -63,6 +64,15 @@ public class GasStation {
         return null;
     }
 
+    public static Tank getTank(long tankId) {
+        for (Tank tank : tanks) {
+            if (tank.getId() == tankId) {
+                return tank;
+            }
+        }
+        return null;
+    }
+
     public static GasPump getGasPump(int id) {
         for (GasPump pump : gasPumps) {
             if (pump.getId() == id) {
@@ -73,7 +83,13 @@ public class GasStation {
     }
 
     public static String calculateTotalRevenue() {
-        return "";
+        double totalRevenue = 0;
+        for (GasPump pump : gasPumps) {
+            double revenue = pump.getTotalRevenue();
+            totalRevenue += revenue;
+        }
+
+        return String.format("%.2f", totalRevenue);
     }
 
     public static void editFuelPrice() {
@@ -109,6 +125,11 @@ public class GasStation {
     }
 
     public static void fillUp() {
+        if (gasPumps.isEmpty()) {
+            IO.print("Seu posto não possui bombas de combustível cadastradas.");
+            return;
+        }
+
         IO.print("Qual o tipo de combustível?");
         IO.print("1 - Gasolina");
         IO.print("2 - Álcool");
@@ -129,42 +150,60 @@ public class GasStation {
         }
 
         for (GasPump gasPump : getGasPumps()) {
-            if (gasPump.getFuel().getType() == type) {
-                IO.print("Bomba de combustível: " + gasPump.getId());
+            if (gasPump.hasFuel() && gasPump.getFuel().getType() == type) {
+                IO.print("Bomba de combustível: " + gasPump.getId() + ". Quantidade: " + gasPump.getTank().getQuantity() + " litros");
             }
         }
 
         int gasPumpId = IO.readInt("Qual o número da bomba de combustível? ");
 
         GasPump gasPump = getGasPump(gasPumpId);
-        Tank tank = getTank(type);
 
-        if (tank == null) {
-            IO.print("Você ainda não cadastrou o tanque para o combustível " + Translate.translate(type));
+        if (gasPump == null) {
+            IO.print("Bomba de combustível inválida.");
             return;
         }
 
+        Tank tank = gasPump.getTank();
+
+        String opt = IO.readString("Deseja abastecer o tanque por litros? (S/N)").toLowerCase();
+
+        DecimalFormat df = new DecimalFormat("#.##");
+
         while (true) {
-            double amount = IO.readDouble("Quantos litros deseja abastecer? ");
+            double amount;
+
+            if (opt.equals("s")) {
+               amount = IO.readDouble("Quantos litros deseja abastecer? ");
+            }
+            else {
+                amount = IO.readDouble("Qual o valor em reais deseja abastecer? ");
+                amount = amount / Fuel.getPrice();
+            }
+
+            amount = Double.parseDouble(df.format(amount));
+            IO.print("Você irá abastecer " + amount + " litros.");
+
             if (amount <= 0) {
                 IO.print("Quantidade inválida. A quantidade deve ser maior que zero");
                 continue;
             }
 
-            if (tank.getCapacity() < amount) {
-                IO.print("O tanque não comporta essa quantidade de combustível.");
+            if (tank.getQuantity() - amount < 0) {
+                IO.print("O tanque não possui combustível suficiente para abastecer essa quantidade");
                 continue;
             }
 
-            tank.addQuantity(amount);
-
+            tank.addQuantity(-amount);
+            gasPump.addRevenue(amount * Fuel.getPrice());
             break;
         }
 
         Saver.save("tanks", tanks.toString());
+        Saver.save("gasPumps", gasPumps.toString());
 
-        IO.print("Tanque abastecido com sucesso");
-        IO.print("Quantidade atual: " + tank.getQuantity() + " litros");
+        IO.print("Abastecimento concluído");
+        IO.print("Quantidade atual de litros do tanque da Bomba: " + tank.getQuantity() + " litros");
     }
 
     public static void setName(String gasStationName) {
@@ -221,5 +260,11 @@ public class GasStation {
         } catch (Exception e) {
             System.out.println("[X] Falha ao recuperar as bombas de combustível.");
         }
+    }
+
+    public static void clearAll() {
+        fuels.clear();
+        tanks.clear();
+        gasPumps.clear();
     }
 }
