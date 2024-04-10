@@ -123,18 +123,24 @@ public class Saver {
 
         try {
             parsedGasPumps = (JSONArray) parser.parse(gasPumps);
+
+            for (Object gasPumpObj : parsedGasPumps) {
+                JSONObject gasPumpJson = (JSONObject) gasPumpObj;
+
+                int tankId = (int) gasPumpJson.get("tankId");
+                int id = (int) gasPumpJson.get("id");
+
+                Tank tank = GasStation.getTank(tankId);
+
+                if (tank == null) {
+                    continue;
+                }
+
+                GasPump gasPump = new GasPump(id, tank);
+                gasPumpsList.add(gasPump);
+            }
         } catch (ParseException e) {
             return gasPumpsList;
-        }
-
-        for (Object gasPumpObj : parsedGasPumps) {
-            JSONObject gasPumpJson = (JSONObject) gasPumpObj;
-
-            IFuelType type = gasPumpJson.get("fuel").equals(FuelType.GASOLINE) ? FuelType.GASOLINE : FuelType.ETHANOL;
-            long id = (long) gasPumpJson.get("id");
-
-            GasPump gasPump = new GasPump((int) id, GasStation.getFuel(type));
-            gasPumpsList.add(gasPump);
         }
 
         return gasPumpsList;
@@ -146,6 +152,22 @@ public class Saver {
         try (Reader reader = new FileReader(CONFIG_FILE)) {
             return (JSONObject) parser.parse(reader);
         } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void clearAll() {
+        JSONObject all = new JSONObject();
+
+        all.put("fuels", new JSONArray());
+        all.put("tanks", new JSONArray());
+        all.put("gasPumps", new JSONArray());
+        all.put("gasStationName", "");
+
+        try (FileWriter file = new FileWriter(CONFIG_FILE)) {
+            file.write(all.toJSONString());
+            file.flush();
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
