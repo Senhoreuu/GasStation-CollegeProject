@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 public class GasPump {
     private final int id;
     private Tank tank;
+    private double totalRevenue = 0;
 
     public GasPump(Tank tank) {
         this.tank = tank;
@@ -14,9 +15,10 @@ public class GasPump {
         this.id = (int) (Math.random() * 10000);
     }
 
-    public GasPump(int id,Tank tank) {
+    public GasPump(int id,Tank tank, double totalRevenue) {
         this.id = id;
         this.tank = tank;
+        this.totalRevenue = totalRevenue;
     }
 
     public GasPump() {
@@ -49,15 +51,22 @@ public class GasPump {
         this.tank = tank;
     }
 
+    public double getTotalRevenue() {
+        return totalRevenue;
+    }
+
+    public void addRevenue(double revenue) {
+        this.totalRevenue += revenue;
+    }
+
     @Override
     public String toString() {
         JSONObject obj = new JSONObject();
 
         obj.put("id", this.id);
-        if (getFuel() != null)
-            obj.put("fuel", getFuel().getType().toString());
-        else
-            obj.put("fuel", "Unknown");
+        obj.put("fuel", getFuel().getType().toString());
+        obj.put("tankId", this.tank.getId());
+        obj.put("totalRevenue", this.totalRevenue);
 
         return obj.toJSONString();
     }
