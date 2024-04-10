@@ -17,11 +17,12 @@ public class Main {
         IO.print("2 - Cadastrar um novo tanque");
         IO.print("3 - Cadastrar uma nova bomba");
         IO.print("4 - Editar preço de um combustível");
-        IO.print("5 - Abastecer Tanque");
+        IO.print("5 - Abastecer");
         IO.print("6 - Calcular faturamento total");
         IO.print("7 - Mostrar combustíveis cadastrados");
         IO.print("8 - Mostrar tanques cadastrados");
         IO.print("9 - Mostrar bombas cadastradas");
+        IO.print("10 - Limpar tudo");
         IO.print("0 - Sair");
     }
 
@@ -31,7 +32,7 @@ public class Main {
         String gasStationName = (String) Saver.get("gasStationName");
 
         if (gasStationName.isEmpty()) {
-            gasStationName = IO.readString("Digite o nome do posto: ");
+            gasStationName = IO.readString("Digite o nome do seu posto: ");
             Saver.save("gasStationName", gasStationName);
         }
 
@@ -118,6 +119,10 @@ public class Main {
                     Stream<GasPump> gasPumps = GasStation.getGasPumps().stream();
                     Stream<String> gasPumpsInString = gasPumps.map(p -> "ID: " + p.getId() + ". Tipo: " + Translate.translate(p.getFuel().getType()));
                     IO.print(gasPumpsInString.collect(Collectors.joining("\n")));
+                    break;
+                case 10:
+                    Saver.clearAll();
+                    GasStation.clearAll();
                     break;
                 default:
                     IO.print("O posto " + gasStationName + " foi fechado.");
