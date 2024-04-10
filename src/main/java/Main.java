@@ -121,9 +121,7 @@ public class Main {
                     IO.print(gasPumpsInString.collect(Collectors.joining("\n")));
                     break;
                 case 10:
-                    Saver.clearAll();
-                    GasStation.clearAll();
-                    break;
+                    Saver.clearAll(); // apos aqui eh pra ele encerrar o programa de proposito, por isso nao possui um break aqui
                 default:
                     IO.print("O posto " + gasStationName + " foi fechado.");
                     option = 0;
