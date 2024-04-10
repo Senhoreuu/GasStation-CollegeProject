@@ -6,17 +6,17 @@ import org.json.simple.JSONObject;
 
 public class GasPump {
     private final int id;
-    private Fuel fuel;
+    private Tank tank;
 
-    public GasPump(Fuel fuel) {
-        this.fuel = fuel;
+    public GasPump(Tank tank) {
+        this.tank = tank;
 
         this.id = (int) (Math.random() * 10000);
     }
 
-    public GasPump(int id, Fuel fuel) {
+    public GasPump(int id,Tank tank) {
         this.id = id;
-        this.fuel = fuel;
+        this.tank = tank;
     }
 
     public GasPump() {
@@ -28,11 +28,25 @@ public class GasPump {
     }
 
     public Fuel getFuel() {
-        return fuel;
+        if (tank == null)
+            return null;
+
+        return tank.getFuel();
     }
 
-    public void setFuel(Fuel fuel) {
-        this.fuel = fuel;
+    public boolean hasFuel() {
+        if (this.tank == null)
+            return false;
+
+        return this.tank.getFuel() != null;
+    }
+
+    public Tank getTank() {
+        return this.tank;
+    }
+
+    public void setTank(Tank tank) {
+        this.tank = tank;
     }
 
     @Override
@@ -40,8 +54,8 @@ public class GasPump {
         JSONObject obj = new JSONObject();
 
         obj.put("id", this.id);
-        if (this.fuel != null)
-            obj.put("fuel", this.fuel.getType().toString());
+        if (getFuel() != null)
+            obj.put("fuel", getFuel().getType().toString());
         else
             obj.put("fuel", "Unknown");
 
@@ -49,39 +63,38 @@ public class GasPump {
     }
 
     public void registerGasPump() {
-        while (this.fuel == null || !(this.fuel.getType() instanceof FuelType)) {
+        while (getFuel() == null) {
             IO.print("Qual o tipo de combustível?");
             IO.print("1 - Gasolina");
             IO.print("2 - Álcool");
 
-            Fuel fuel;
+            Tank tank = null;
 
             switch (IO.readInt("Digite aqui a opção: ")) {
                 case 1:
-                    fuel = GasStation.getFuel(FuelType.GASOLINE);
+                    tank = GasStation.getTank(FuelType.GASOLINE);
 
-                    if (fuel == null) {
+                    if (tank == null) {
                         IO.print("Combustível não cadastrado.");
                         return;
                     }
-
-                    this.setFuel(fuel);
                     break;
                 case 2:
-                    fuel = GasStation.getFuel(FuelType.ETHANOL);
+                    tank = GasStation.getTank(FuelType.ETHANOL);
 
-                    if (fuel == null) {
+                    if (tank == null) {
                         IO.print("Combustível não cadastrado.");
                         return;
                     }
-
-                    this.setFuel(fuel);
                     break;
                 default:
                     IO.print("Opção inválida.");
             }
-        }
 
-        IO.print("Bomba de combustível cadastrada com sucesso.");
+            if (tank != null) {
+                this.setTank(tank);
+                IO.print("Bomba de combustível cadastrada com sucesso.");
+            }
+        }
     }
 }
